@@ -9,20 +9,18 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.params.ClientPNames;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.ff.sunshineoaclient.util.LoginUtil;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -59,7 +57,6 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		// initlogin();
 		new Thread(runnable).start();
 	}
 
@@ -83,10 +80,7 @@ public class MainActivity extends Activity {
 			data.putString("value", "请求结果");
 			msg.setData(data);
 			handler.sendMessage(msg);
-			initlogin();
-			login();
-			initSearch();
-			searchList();
+			
 		}
 	};
 
@@ -147,9 +141,9 @@ public class MainActivity extends Activity {
 		BasicNameValuePair actionsPair = new BasicNameValuePair("actions",
 				actions);
 		BasicNameValuePair usercodePair = new BasicNameValuePair("usercode",
-				"fanxd");
+				"********");
 		BasicNameValuePair userpwdPair = new BasicNameValuePair("userpwd",
-				"23144773");
+				"********");
 		// 给POST方法加入上述键值对
 		// post.setRequestBody(new NameValuePair[] { sysNamePair, oprIDPair,
 		// actionsPair, usercodePair, userpwdPair });
@@ -271,9 +265,9 @@ public class MainActivity extends Activity {
 		BasicNameValuePair mobilePair = new BasicNameValuePair("mobile", "");
 		BasicNameValuePair PageNoPair = new BasicNameValuePair("PageNo", "1");
 		BasicNameValuePair usercodePair = new BasicNameValuePair("usercode",
-				"fanxd");
+				"********");
 		BasicNameValuePair userpwdPair = new BasicNameValuePair("userpwd",
-				"23144773");
+				"********");
 		BasicNameValuePair emailPair = new BasicNameValuePair("email", "@");
 
 		pairList.add(sysNamePair);
