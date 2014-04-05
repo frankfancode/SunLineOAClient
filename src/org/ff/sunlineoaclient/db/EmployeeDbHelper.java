@@ -1,6 +1,6 @@
-package org.ff.sunshineoaclient.db;
+package org.ff.sunlineoaclient.db;
 
-import org.ff.sunshineoaclient.db.EmployeeDb.Employee;
+import org.ff.sunlineoaclient.db.EmployeeDb.Employee;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

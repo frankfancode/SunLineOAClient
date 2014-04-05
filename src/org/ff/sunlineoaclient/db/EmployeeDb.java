@@ -1,4 +1,4 @@
-package org.ff.sunshineoaclient.db;
+package org.ff.sunlineoaclient.db;
 
 import android.provider.BaseColumns;
 
