@@ -125,7 +125,7 @@ public class LoginActivity extends Activity {
 
                     //登录成功后跳转至通讯录界面
                     Intent intent = new Intent(LoginActivity.this,
-                            AddressList.class);
+                            EmployeeListActivity.class);
                     LoginActivity.this.startActivity(intent);
 
 //                    EmployeeUtil employeeUtil = new EmployeeUtil();

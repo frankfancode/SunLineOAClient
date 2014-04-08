@@ -1,6 +1,6 @@
 package org.ff.sunlineoaclient.db;
 
-import org.ff.sunlineoaclient.db.EmployeeDb.Employee;
+import org.ff.sunlineoaclient.db.EmployeeDb.EmployeeTB;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -10,21 +10,22 @@ public class EmployeeDbHelper extends SQLiteOpenHelper {
 	// If you change the database schema, you must increment the database
 	// version.
 	public static final int DATABASE_VERSION = 1;
-	public static final String DATABASE_NAME = "FeedReader.db";
+	public static final String DATABASE_NAME = "EmployeeList.db";
 
-	public EmployeeDbHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION);
-	}
+	public EmployeeDbHelper(Context context, String name,
+                            SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, name, factory, version);
+    }
 
 	private static final String TEXT_TYPE = " TEXT ";
 	private static final String COMMA_SEP = ",";
 	private static final String SQL_CREATE_EMPLOYEE = "CREATE TABLE "
-			+ Employee.TABLE_NAME + " (" + Employee._ID
-			+ " INTEGER PRIMARY KEY," + Employee.EMPLOYEE_NAME + TEXT_TYPE
-			+ COMMA_SEP + Employee.EMPLOYEE_PHONENO + TEXT_TYPE
+			+ EmployeeTB.TABLE_NAME + " (" + EmployeeTB._ID
+			+ " INTEGER PRIMARY KEY," + EmployeeTB.EMPLOYEE_NAME + TEXT_TYPE
+			+ COMMA_SEP + EmployeeTB.EMPLOYEE_PHONENO + TEXT_TYPE
 			+ " )";
 	private static final String SQL_DELETE_EMPLOYEE = "DROP TABLE IF EXISTS "
-			+ Employee.TABLE_NAME;
+			+ EmployeeTB.TABLE_NAME;
 
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(SQL_CREATE_EMPLOYEE);
