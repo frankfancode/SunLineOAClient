@@ -32,6 +32,7 @@ import java.util.List;
 public class EmployeeListAdapter extends ArrayAdapter<Employee> {
     int resource;
 
+
     public EmployeeListAdapter(Context context, int resource, List<Employee> items) {
         super(context, resource,items);
         this.resource = resource;

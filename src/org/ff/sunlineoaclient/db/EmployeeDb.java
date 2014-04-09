@@ -9,7 +9,7 @@ public class EmployeeDb {
 	public static abstract class EmployeeTB implements BaseColumns {
 		public static final String TABLE_NAME = "employee";
 		public static final String EMPLOYEE_NAME = "employee_name";
-		public static final String EMPLOYEE_PHONENO = "phoneno";
+		public static final String EMPLOYEE_PHONENO = "employee_phoneno";
 	}
 
 	

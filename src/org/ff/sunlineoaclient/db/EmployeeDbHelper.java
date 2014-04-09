@@ -9,8 +9,9 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class EmployeeDbHelper extends SQLiteOpenHelper {
 	// If you change the database schema, you must increment the database
 	// version.
+    public static final String DATABASE_NAME = "employeelist.db";
 	public static final int DATABASE_VERSION = 1;
-	public static final String DATABASE_NAME = "EmployeeList.db";
+
 
 	public EmployeeDbHelper(Context context, String name,
                             SQLiteDatabase.CursorFactory factory, int version) {
@@ -42,4 +43,8 @@ public class EmployeeDbHelper extends SQLiteOpenHelper {
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		onUpgrade(db, oldVersion, newVersion);
 	}
+
+    public void onReCreate(SQLiteDatabase db){
+        onUpgrade(db,1,1);
+    }
 }

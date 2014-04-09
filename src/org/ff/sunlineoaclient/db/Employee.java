@@ -4,6 +4,12 @@ public class Employee {
     private String employeeName;
     private String employeePhoneNo;
 
+    public Employee() {}
+    public Employee(String _employeeName, String _employeePhoneNo) {
+        employeeName = _employeeName;
+        employeePhoneNo = _employeePhoneNo;
+    }
+
     /**
      * @return the employeeName
      */

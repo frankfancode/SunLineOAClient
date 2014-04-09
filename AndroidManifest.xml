@@ -32,7 +32,12 @@
 				<category android:name="android.intent.category.LAUNCHER"/>
 			</intent-filter>
 		</activity>
-		<activity android:name="org.ff.sunlineoaclient.activity.EmployeeListActivity" android:label="EmployeeList"/>
+		<activity android:name="org.ff.sunlineoaclient.activity.EmployeeListActivity"
+		          android:label="EmployeeList"/>
+
+		<provider android:name=".provider.EmployeeListProvider"
+		          android:authorities="org.ff.sunlineoaclient.provider"/>
+
 	</application>
 
 </manifest>
