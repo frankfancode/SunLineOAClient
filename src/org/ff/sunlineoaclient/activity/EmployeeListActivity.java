@@ -15,8 +15,8 @@ import android.widget.Button;
 import org.ff.sunlineoaclient.R;
 import org.ff.sunlineoaclient.adapter.EmployeeListAdapter;
 import org.ff.sunlineoaclient.db.Employee;
-import org.ff.sunlineoaclient.db.EmployeeDbHelper;
 import org.ff.sunlineoaclient.provider.EmployeeListProvider;
+import org.ff.sunlineoaclient.util.EmployeeUtil;
 
 import java.util.ArrayList;
 
@@ -38,11 +38,11 @@ public class EmployeeListActivity extends Activity
         Log.i(TAG, "start");
         FragmentManager fm = getFragmentManager();
         EmployeeListFragment employeeListFragment = (EmployeeListFragment) fm
-                .findFragmentById(R.id.AddressListFragment);
+                .findFragmentById(R.id.employeeListFragment);
 
         employeeList = new ArrayList<Employee>();
 
-        int resID = R.layout.address_item;
+        int resID = R.layout.employee_item;
         aa = new EmployeeListAdapter(this, resID, employeeList);
 
         employeeListFragment.setListAdapter(aa);
@@ -53,7 +53,8 @@ public class EmployeeListActivity extends Activity
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onUpdateEmployee("test");
+                //onUpdateEmployee("test");
+                EmployeeUtil.insertEmployeeDB();
             }
         });
 
@@ -74,8 +75,8 @@ public class EmployeeListActivity extends Activity
 
         ContentValues values = new ContentValues();
         values.put(EmployeeListProvider.KEY_EMPLOYEE_NAME, newItem);
-        values.put(EmployeeListProvider.KEY_EMPLOYEE_PHONENO, newItem);
-        cr.delete(EmployeeListProvider.CONTENT_URI, null, null);
+        values.put(EmployeeListProvider.KEY_EMPLOYEE_PHONENO, "1328729****");
+        //cr.delete(EmployeeListProvider.CONTENT_URI, null, null);
         cr.insert(EmployeeListProvider.CONTENT_URI, values);
 
         getLoaderManager().restartLoader(0, null, this);
@@ -89,12 +90,12 @@ public class EmployeeListActivity extends Activity
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        int keyTaskIndex = cursor
-                .getColumnIndexOrThrow(EmployeeListProvider.KEY_EMPLOYEE_NAME);
+        int keyEmployeeNameIndex = cursor.getColumnIndexOrThrow(EmployeeListProvider.KEY_EMPLOYEE_NAME);
+        int keyEmployeePhoneNoIndex = cursor.getColumnIndexOrThrow(EmployeeListProvider.KEY_EMPLOYEE_PHONENO);
 
         employeeList.clear();
         while (cursor.moveToNext()) {
-            Employee newItem = new Employee("test","phone");
+            Employee newItem = new Employee(cursor.getString(keyEmployeeNameIndex), cursor.getString(keyEmployeePhoneNoIndex));
             employeeList.add(newItem);
         }
         aa.notifyDataSetChanged();

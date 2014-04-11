@@ -59,11 +59,11 @@ public class EmployeeListAdapter extends ArrayAdapter<Employee> {
         }
 
         TextView employeeNameView = (TextView) employeeView.findViewById(R.id.employeeName);
-        TextView employeePhoneView = (TextView) employeeView.findViewById(R.id.employeePhone);
+        TextView employeePhoneView = (TextView) employeeView.findViewById(R.id.employeePhoneNo);
 
         employeeNameView.setText(employeeName);
         employeePhoneView.setText(employeePhoneNo);
 
-        return employeeNameView;
+        return employeeView;
     }
 }

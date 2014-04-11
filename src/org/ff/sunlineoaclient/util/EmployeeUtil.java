@@ -1,10 +1,7 @@
 package org.ff.sunlineoaclient.util;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
+import android.content.ContentValues;
+import android.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -22,12 +19,17 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 import org.ff.sunlineoaclient.OaApplication;
 import org.ff.sunlineoaclient.db.Employee;
+import org.ff.sunlineoaclient.db.EmployeeDb;
+import org.ff.sunlineoaclient.provider.EmployeeListProvider;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import android.util.Log;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 /* update the table Employee
  * go to the contacts in OA search all of employees' name and phone number
@@ -172,7 +174,13 @@ public class EmployeeUtil {
 
                 employeeList.addAll(tableToArray(employeeHtml));
                 for (Employee e : tableToArray(employeeHtml)) {
-                    System.out.println(e.getEmployeeName());
+                    System.out.println(e.getEmployeeName()+e.getEmployeePhoneNo());
+                    EmployeeListProvider a=new EmployeeListProvider();
+                    ContentValues contentValues=new ContentValues();
+                    contentValues.put(EmployeeDb.EmployeeTB.EMPLOYEE_NAME,"1");
+                    contentValues.put(EmployeeDb.EmployeeTB.EMPLOYEE_PHONENO,"1");
+                    a.insert(EmployeeListProvider.CONTENT_URI,contentValues);
+
                 }
 //				Log.i("employees",employees.toString());
                 if (cookies.isEmpty()) {
@@ -244,6 +252,12 @@ public class EmployeeUtil {
         System.out.println("tableToArray_over");
 
         return employees;
+
+    }
+
+    public static  void insertEmployeeDB(){
+        initSearch();
+        searchContacts();
 
     }
 
