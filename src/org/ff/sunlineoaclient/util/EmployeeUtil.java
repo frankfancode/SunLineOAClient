@@ -1,6 +1,8 @@
 package org.ff.sunlineoaclient.util;
 
+import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -28,6 +30,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,6 +40,7 @@ import java.util.List;
  * at the last,insert array to the table Employee
  * */
 public class EmployeeUtil {
+
     // 登录时需要的字段
     static String sysName = null;
     static String oprID = null;
@@ -46,30 +50,30 @@ public class EmployeeUtil {
     static String lxdh = null;
     static String mobile = null;
     static String email = null;
-    static String PageNo = null;
+    static int pageNo = 1;
     static String sessionId = null;
     static String JSESSIONID = OaApplication.getInstance().getJSESSIONID(); // 用来保存JSESSIONID
     String usercode = null;
     String userpwd = null;
 
     static int totalEmployee = 0;
-    static int totalPage = 0;
+    static int totalPage = 1;
     static int currentPageNo = 0;
 
     private static Employee[] employeesAll = null;
     private static ArrayList<Employee> employeeList = new ArrayList<Employee>();
 
-    public void updateEmployeeDb() {
+    public void updateEmployeeDb(Context context) {
         initSearch();
-        searchContacts();
+        searchContacts(context);
     }
 
     private static void initSearch() {
         Document loginDoc;
         try {
-            loginDoc = Jsoup
-                    .connect("http://oa.sunline.cn/oams/pi/ggtxlnew.jsp")
-                    .userAgent("Mozilla").post();
+            loginDoc = Jsoup.connect("http://oa.sunline.cn/oams/pi/ggtxlnew.jsp")
+                    .userAgent("Mozilla")
+                    .post();
             Elements loginElements = loginDoc.getElementsByTag("input");
             // Elements links = content.getElementsByTag("a");
             for (Element inputLogin : loginElements) {
@@ -87,13 +91,13 @@ public class EmployeeUtil {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        System.out.println("initSearch");
+        System.out.println("initSearchOver");
         Log.i("some values needs", "sysName:" + sysName + " oprId：" + oprID
                 + "actions_Search：" + actions_Search);
     }
 
     // 搜索雇员信息
-    private static void searchContacts() {
+    private static void searchContacts(Context context) {
         System.out.println("searchList_start");
         // 将需要的键值对写出来
         ArrayList<BasicNameValuePair> pairList = new ArrayList<BasicNameValuePair>();
@@ -108,8 +112,10 @@ public class EmployeeUtil {
         BasicNameValuePair namePair = new BasicNameValuePair("name", "");
         BasicNameValuePair lxdhPair = new BasicNameValuePair("lxdh", "");
         BasicNameValuePair mobilePair = new BasicNameValuePair("mobile", "");
-        String ii = "1";
-        BasicNameValuePair PageNoPair = new BasicNameValuePair("PageNo", ii);
+        BasicNameValuePair lastPageNoPair;
+        BasicNameValuePair currentPageNoPair;
+
+
         BasicNameValuePair emailPair = new BasicNameValuePair("email", "@");
         pairList.add(sysNamePair);
         pairList.add(oprIDPair);
@@ -118,28 +124,17 @@ public class EmployeeUtil {
         pairList.add(namePair);
         pairList.add(lxdhPair);
         pairList.add(mobilePair);
-        pairList.add(PageNoPair);
+        //pairList.add(PageNoPair);
+        pairList.add(emailPair);
 
+        //pairList.set(pairList.indexOf("PageNo")-1,"9");
         // pairList.add(usercodePair);
         // pairList.add(userpwdPair);
-        pairList.add(emailPair);
-        int pageNoPaireIndex = pairList.indexOf(PageNoPair);
 
-        ii = "3";
+
         HttpPost post = new HttpPost("http://oa.sunline.cn/oams/pi/ggtxl.so");
 
-        try {
-            HttpEntity entity = null;
-            entity = new UrlEncodedFormEntity(pairList, "GBK");
-            //StringEntity stringEntity = new StringEntity("sysName="+sysName+"&oprID="+oprID+"&actions="+actions_Search+"&PageNo="+9+"&email=@");//param参数，可以为"key1=value1&key2=value2"的一串字符串
-            post.setEntity(entity);
-            //post.setEntity(stringEntity);
-        } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        HttpParams params = new BasicHttpParams();//
+        HttpParams params;//
         params = new BasicHttpParams();
         HttpConnectionParams.setConnectionTimeout(params, 8000); // 连接超时
         HttpConnectionParams.setSoTimeout(params, 5000); // 响应超时
@@ -148,64 +143,93 @@ public class EmployeeUtil {
         post.setHeader("Cookie", "JSESSIONID=" + JSESSIONID);
         // 实例化HttpClient
         HttpClient client = new DefaultHttpClient();
-
         HttpResponse response;
-        try {
-            client.getParams().setParameter("pageNo", "9");
-            response = client.execute(post);
-
-            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-
-                List<Cookie> cookies = ((AbstractHttpClient) client)
-                        .getCookieStore().getCookies();
-                //Log.i("searchContacts",EntityUtils.toString(response.getEntity()));
-                String employeeHtml = EntityUtils
-                        .toString(response.getEntity());
-
-                Document tableDoc = Jsoup.parse(employeeHtml);
-                Elements countInfo = tableDoc.select("tr.toolbar");
 
 
-                Element totalElement = countInfo.get(0).select("font").first();
-                Log.i("tr.toolbar", countInfo.outerHtml());
-                totalEmployee = Integer.parseInt(totalElement.text());
-                Element totalPageElement = countInfo.get(0).select("font").get(1);
-                totalPage = Integer.parseInt(totalPageElement.text());
+        currentPageNoPair = new BasicNameValuePair("PageNo", 1 + "");
+        for (pageNo = 1; pageNo <= totalPage; pageNo++) {
+            if (pageNo > 1) {
+                lastPageNoPair = currentPageNoPair;
+                pairList.remove(pairList.indexOf(lastPageNoPair));
+            }
+            currentPageNoPair = new BasicNameValuePair("PageNo", pageNo + "");
+            pairList.add(currentPageNoPair);
+            try {
+                HttpEntity entity = null;
+                entity = new UrlEncodedFormEntity(pairList, "GBK");
+                //StringEntity stringEntity = new StringEntity("sysName="+sysName+"&oprID="+oprID+"&actions="+actions_Search+"&PageNo="+9+"&email=@");//param参数，可以为"key1=value1&key2=value2"的一串字符串
+                post.setEntity(entity);
+            } catch (UnsupportedEncodingException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
 
-                employeeList.addAll(tableToArray(employeeHtml));
-                for (Employee e : tableToArray(employeeHtml)) {
-                    System.out.println(e.getEmployeeName()+e.getEmployeePhoneNo());
-                    EmployeeListProvider a=new EmployeeListProvider();
-                    ContentValues contentValues=new ContentValues();
-                    contentValues.put(EmployeeDb.EmployeeTB.EMPLOYEE_NAME,"1");
-                    contentValues.put(EmployeeDb.EmployeeTB.EMPLOYEE_PHONENO,"1");
-                    a.insert(EmployeeListProvider.CONTENT_URI,contentValues);
 
-                }
+            try {
+
+                response = client.execute(post);
+
+                if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+
+                    List<Cookie> cookies = ((AbstractHttpClient) client)
+                            .getCookieStore().getCookies();
+                    //Log.i("searchContacts",EntityUtils.toString(response.getEntity()));
+                    String employeeHtml = EntityUtils
+                            .toString(response.getEntity());
+
+                    Document tableDoc = Jsoup.parse(employeeHtml);
+                    Elements countInfo = tableDoc.select("tr.toolbar");
+
+
+                    Element totalElement = countInfo.get(0).select("font").first();
+                    Log.i("tr.toolbar", countInfo.outerHtml());
+                    totalEmployee = Integer.parseInt(totalElement.text());
+                    Element totalPageElement = countInfo.get(0).select("font").get(2);
+                    totalPage = Integer.parseInt(totalPageElement.text());
+                    Log.i("totalPage", totalPage + "");
+
+                    employeeList.addAll(tableToArray(employeeHtml));
+                    for (Employee e : tableToArray(employeeHtml)) {
+                        System.out.println(e.getEmployeeName() + e.getEmployeePhoneNo());
+                        EmployeeListProvider a = new EmployeeListProvider();
+
+                        ContentResolver cr = context.getContentResolver();
+                        //a.onCreate();
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(EmployeeDb.EmployeeTB.EMPLOYEE_NAME, e.getEmployeeName());
+                        contentValues.put(EmployeeDb.EmployeeTB.EMPLOYEE_PHONENO, e.getEmployeePhoneNo());
+                        //a.insert(EmployeeListProvider.CONTENT_URI,contentValues);
+                        cr.insert(EmployeeListProvider.CONTENT_URI, contentValues);
+
+                    }
 //				Log.i("employees",employees.toString());
-                if (cookies.isEmpty()) {
-                    Log.i("TAG", "-------Cookie NONE---------");
-                } else {
+                    if (cookies.isEmpty()) {
+                        Log.i("TAG", "-------Cookie NONE---------");
+                    } else {
 
-                    for (int i = 0; i < cookies.size(); i++) { // 保存cookie
-                        // cookie =
-                        cookies.get(i);
-                        Log.i("TAG", cookies.get(i).getName() + "="
-                                + cookies.get(i).getValue());
-                        if ("JSESSIONID".equals(cookies.get(i).getName())) {
+                        for (int i = 0; i < cookies.size(); i++) { // 保存cookie
+                            // cookie =
+                            cookies.get(i);
+                            Log.i("TAG", cookies.get(i).getName() + "="
+                                    + cookies.get(i).getValue());
+                            if ("JSESSIONID".equals(cookies.get(i).getName())) {
+                            }
                         }
+
                     }
 
                 }
-
+            } catch (ClientProtocolException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
             }
-        } catch (ClientProtocolException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+
+
         }
+
 
         // HttpEntity responseEntity = response.getEntity();
         // System.out.println(EntityUtils.toString(responseEntity));
@@ -225,6 +249,7 @@ public class EmployeeUtil {
         //System.out.println(employeeDoc.html());
 
         Elements trs = employeeDoc.select("tr");
+        trs.remove(0);
         //System.out.println(trs.html());
 
         String employeeName = null;
@@ -232,8 +257,8 @@ public class EmployeeUtil {
         ArrayList<Employee> employees = new ArrayList<Employee>();
         for (Element row : trs) {
             Elements cols = row.children();
-            employeeName = cols.get(2).text();
-            employeePhoneNo = cols.get(4).text();
+            employeeName = cols.get(2).text().trim();
+            employeePhoneNo = cols.get(4).text().trim();
             Employee oneEmployee = new Employee();
             oneEmployee.setEmployeeName(employeeName);
             oneEmployee.setEmployeePhoneNo(employeePhoneNo);
@@ -255,10 +280,8 @@ public class EmployeeUtil {
 
     }
 
-    public static  void insertEmployeeDB(){
+    public static void insertEmployeeDB(Context context) {
         initSearch();
-        searchContacts();
-
+        searchContacts(context);
     }
-
 }

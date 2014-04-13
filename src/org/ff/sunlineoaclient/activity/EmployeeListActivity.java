@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Loader;
 import android.database.Cursor;
@@ -27,7 +26,7 @@ import java.util.ArrayList;
 public class EmployeeListActivity extends Activity
         implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private String TAG = "AddressListActivity";
+    private String TAG = "EmployeeListActivity";
     private ArrayList<Employee> employeeList;
     private EmployeeListAdapter aa;
 
@@ -37,6 +36,7 @@ public class EmployeeListActivity extends Activity
 
         Log.i(TAG, "start");
         FragmentManager fm = getFragmentManager();
+
         EmployeeListFragment employeeListFragment = (EmployeeListFragment) fm
                 .findFragmentById(R.id.employeeListFragment);
 
@@ -53,8 +53,8 @@ public class EmployeeListActivity extends Activity
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //onUpdateEmployee("test");
-                EmployeeUtil.insertEmployeeDB();
+                onUpdateEmployee("test");
+
             }
         });
 
@@ -73,11 +73,9 @@ public class EmployeeListActivity extends Activity
     public void onUpdateEmployee(String newItem) {
         ContentResolver cr = getContentResolver();
 
-        ContentValues values = new ContentValues();
-        values.put(EmployeeListProvider.KEY_EMPLOYEE_NAME, newItem);
-        values.put(EmployeeListProvider.KEY_EMPLOYEE_PHONENO, "1328729****");
-        //cr.delete(EmployeeListProvider.CONTENT_URI, null, null);
-        cr.insert(EmployeeListProvider.CONTENT_URI, values);
+        cr.delete(EmployeeListProvider.CONTENT_URI, null, null);
+        EmployeeUtil.insertEmployeeDB(getBaseContext());
+        //cr.insert(EmployeeListProvider.CONTENT_URI, values);
 
         getLoaderManager().restartLoader(0, null, this);
     }

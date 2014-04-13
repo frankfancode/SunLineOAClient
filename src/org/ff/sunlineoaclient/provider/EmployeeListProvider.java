@@ -51,14 +51,14 @@ public class EmployeeListProvider extends ContentProvider {
         return false;
     }
 
-    private static final int ALLROWS = 1;
+    private static final int ALL_ROWS = 1;
     private static final int SINGLE_ROW = 2;
 
     private static final UriMatcher uriMatcher ;
 
     static {
         uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
-        uriMatcher.addURI("org.ff.sunlineoaclient.provider", "employeeitems", ALLROWS);
+        uriMatcher.addURI("org.ff.sunlineoaclient.provider", "employeeitems", ALL_ROWS);
         uriMatcher.addURI("org.ff.sunlineoaclient.provider", "employeeitems/#", SINGLE_ROW);
     }
 
@@ -67,8 +67,8 @@ public class EmployeeListProvider extends ContentProvider {
         // Return a string that identifies the MIME type
         // for a Content Provider URI
         switch (uriMatcher.match(uri)) {
-            case ALLROWS: return "vnd.android.cursor.dir/org.ff.sunlineoaclient.provider";
-            case SINGLE_ROW: return "vnd.android.cursor.item/org.ff.sunlineoaclient.provider";
+            case ALL_ROWS: return "vnd.android.cursor.dir/employees";
+            case SINGLE_ROW: return "vnd.android.cursor.item/employee";
             default: throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
     }
