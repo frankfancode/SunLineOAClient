@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:id="@+id/activity_employee_list">
 
 	<fragment
 			android:name="org.ff.sunlineoaclient.activity.EmployeeListFragment"
@@ -23,5 +24,6 @@
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
 				android:text="获取最新通讯录"></Button>
+
 	</LinearLayout>
 </RelativeLayout>

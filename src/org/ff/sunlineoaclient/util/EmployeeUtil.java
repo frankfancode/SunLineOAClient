@@ -3,6 +3,7 @@ package org.ff.sunlineoaclient.util;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.os.Message;
 import android.util.Log;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -30,9 +31,9 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Handler;
 
 /* update the table Employee
  * go to the contacts in OA search all of employees' name and phone number
@@ -63,9 +64,9 @@ public class EmployeeUtil {
     private static Employee[] employeesAll = null;
     private static ArrayList<Employee> employeeList = new ArrayList<Employee>();
 
-    public void updateEmployeeDb(Context context) {
+    public void updateEmployeeDb(Context context, android.os.Handler handler) {
         initSearch();
-        searchContacts(context);
+        searchContacts(context, handler);
     }
 
     private static void initSearch() {
@@ -97,7 +98,8 @@ public class EmployeeUtil {
     }
 
     // 搜索雇员信息
-    private static void searchContacts(Context context) {
+    private static void searchContacts(Context context, android.os.Handler handler) {
+
         System.out.println("searchList_start");
         // 将需要的键值对写出来
         ArrayList<BasicNameValuePair> pairList = new ArrayList<BasicNameValuePair>();
@@ -148,9 +150,14 @@ public class EmployeeUtil {
 
         currentPageNoPair = new BasicNameValuePair("PageNo", 1 + "");
         for (pageNo = 1; pageNo <= totalPage; pageNo++) {
+            Message msg = new Message();
+            msg.what = 1;
+            handler.sendMessage(msg);
+
             if (pageNo > 1) {
                 lastPageNoPair = currentPageNoPair;
                 pairList.remove(pairList.indexOf(lastPageNoPair));
+                OaApplication.progressing = pageNo / totalPage * 100;
             }
             currentPageNoPair = new BasicNameValuePair("PageNo", pageNo + "");
             pairList.add(currentPageNoPair);
@@ -230,7 +237,9 @@ public class EmployeeUtil {
 
         }
 
-
+        Message msg = new Message();
+        msg.what = 2;
+        handler.sendMessage(msg);
         // HttpEntity responseEntity = response.getEntity();
         // System.out.println(EntityUtils.toString(responseEntity));
 
@@ -280,8 +289,9 @@ public class EmployeeUtil {
 
     }
 
-    public static void insertEmployeeDB(Context context) {
+    public static void insertEmployeeDB(Context context, android.os.Handler handler) {
         initSearch();
-        searchContacts(context);
+        searchContacts(context, handler);
+
     }
 }
